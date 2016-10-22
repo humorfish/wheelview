@@ -3,4 +3,24 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <!-- Color for Normal Buttons -->
+    <color name="app_color_normal_button_gray">#2075747C</color>
+    <color name="app_color_normal_button_blue">#FF0000FF</color>
+    <color name="app_color_normal_button_white">#FFF1EFF0</color>
+    <color name="app_color_normal_button_black">#FF3F3F3F</color>
+    <!--nivagation -->
+    <color name="app_background_working_color">#0F6288</color>
+    <color name="app_background_second_working_color">#0080B8</color>
+    <color name="wheelview_little_view">#139BD7</color>
+    <color name="wheelview_big_view">#008DCA</color>
+    <color name="app_searchview_color">#a00080B8</color>
+    <color name="app_front_setting_color">#00A0E9</color>
+    <color name="app_small_circle_color">#00AEEF</color>
+    <color name="app_main_title_color">#1392D8</color>
+    <color name="app_main_title_second_color">#139ad8</color>
+    <color name="app_title_belew_color">#1682b4</color>
+    <color name="app_text_color_blue">#B4DDF0</color>
+    <color name="app_text_color_background">#058DCD</color>
+    <color name="app_text_color_deepblue">#0C587B</color>
+
 </resources>

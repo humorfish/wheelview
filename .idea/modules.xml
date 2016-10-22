@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/wheelview.iml" filepath="$PROJECT_DIR$/wheelview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wheelviewlib/wheelviewlib.iml" filepath="$PROJECT_DIR$/wheelviewlib/wheelviewlib.iml" />
     </modules>
   </component>
 </project>

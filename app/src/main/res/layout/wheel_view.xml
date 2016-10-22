@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background_working_color">
+
+    <com.you.turntable.model.WheelView
+        android:id="@+id/wheelview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.you.turntable.model.BodyPartView
+            android:id="@+id/id_circle_menu_big_wheel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#55ffaa00"/>
+
+        <com.you.turntable.model.BodyPartView
+            android:id="@+id/id_circle_menu_little_wheel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#55ff22ff"/>
+
+        <ImageButton
+            android:id="@+id/id_click_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/wheel3" />
+    </com.you.turntable.model.WheelView>
+</RelativeLayout>
