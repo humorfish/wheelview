@@ -23,8 +23,8 @@ public class BodyPartView extends View {
     public static final byte BIGWHEELVIEW = 0x01;
     public static final byte LITTLEWHEELVIEW = 0x02;
     private byte WHEELTYPE;
-    private int screenWidth = 0;
-    private int screenHeigth = 0;
+    private int screenWidth = 480;
+    private int screenHeigth = 800;
 
     int[] dxdy = new int[2];
     Bitmap centerBitmap;
@@ -122,6 +122,10 @@ public class BodyPartView extends View {
         WHEELTYPE = wheelType;
         this.centerBitmapId = centerBitmapId;
         setBitmap(centerBitmapId, true);
+    }
+
+    public void setStartAngle(double mStartAngle){
+        this.mStartAngle = mStartAngle;
     }
 
     private void setBitmap(int centerBitmapId, boolean firstSetting) {
@@ -359,7 +363,7 @@ public class BodyPartView extends View {
         }
     }
 
-    private void refeshView(int action) {
+    public void refeshView(int action) {
         Message msg = Message.obtain();
         msg.what = action;
         mHandler.sendMessage(msg);
@@ -377,10 +381,10 @@ public class BodyPartView extends View {
         }
     }
 
-    @Override
+    /*@Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+        float x = event.getRawX();
+        float y = event.getRawY();
 
 //        Log.e(TAG,"wheelType="+ WHEELTYPE +  "  x = " + x + "  , y = " + y);
 
@@ -392,13 +396,13 @@ public class BodyPartView extends View {
                 mStartAngle = 0;
                 break;
             case MotionEvent.ACTION_MOVE:
-                /**
+                *//**
                  * 获得开始的角度
-                 */
+                 *//*
                 float start = getAngle(mLastX, mLastY);
-                /**
+                *//**
                  * 获得当前的角度
-                 */
+                 *//*
                 float end = getAngle(x, y);
 
                 // Log.e("TAG", "start = " + start + " , end =" + end);
@@ -424,6 +428,6 @@ public class BodyPartView extends View {
                 break;
         }
         return super.dispatchTouchEvent(event);
-    }
+    }*/
 
 }

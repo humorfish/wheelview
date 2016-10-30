@@ -139,7 +139,7 @@ public class WheelView extends ViewGroup {
                     littleWheel.setBackground(getResources().getColor(R.color.wheelview_little_view));
                     littleWheel.setWheelType(BodyPartView.LITTLEWHEELVIEW, 0);
 
-                    littleWheel.layout(0, getHeight() - (int) Math.sqrt(2) * getWidth() / 2 - getWidth() / 2, right, getHeight());
+                    littleWheel.layout(0, getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)), right, getHeight());
                 }
             } else if (child.getId() == R.id.id_circle_menu_big_wheel) {
                 if (bigWheel == null) {
@@ -148,7 +148,7 @@ public class WheelView extends ViewGroup {
                     bigWheel.setBackground(getResources().getColor(R.color.wheelview_big_view));
                     bigWheel.setWheelType(BodyPartView.BIGWHEELVIEW, 0);
 
-                    bigWheel.layout(0, getHeight() - (int) Math.sqrt(2) * getWidth() - getWidth() / 2, right, getHeight() - (int) Math.sqrt(2) * getWidth() / 2);
+                    bigWheel.layout(0, getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) - getWidth()/2, right, getHeight() - (int) Math.sqrt(2) * getWidth() / 2);
                 }
             } else if (child.getId() == R.id.id_click_view) {
                 ImageButton view = (ImageButton)child;
@@ -165,14 +165,63 @@ public class WheelView extends ViewGroup {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getY() <= getHeight() - Math.sqrt(2) * getWidth() / 2) {
-            bigWheel.dispatchTouchEvent(event);
-            littleWheel.setFocusableInTouchMode(false);
-        }else{
-            littleWheel.dispatchTouchEvent(event);
-            bigWheel.setFocusableInTouchMode(false);
+        float x = event.getRawX();
+        float y = event.getRawY();
+
+//        Log.e(TAG,"wheelType="+ WHEELTYPE +  "  x = " + x + "  , y = " + y);
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mLastX = x;
+                mLastY = y;
+                mStartAngle = 0;
+
+                handleScollTouchDown();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                /**
+                 * 获得开始的角度
+                 */
+                float start = getAngle(mLastX, mLastY);
+                /**
+                 * 获得当前的角度
+                 */
+                float end = getAngle(x, y);
+
+                // Log.e("TAG", "start = " + start + " , end =" + end);
+                // 如果是一、四象限，则直接end-start，角度值都是正值
+                if (getQuadrant(x, y) == 1 || getQuadrant(x, y) == 4) {
+                    mStartAngle += end - start;
+                } else // 二、三象限，色角度值是付值
+                {
+                    mStartAngle += start - end;
+                }
+
+
+                handleScollTouchMove();
+                mLastX = x;
+                mLastY = y;
+
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
         }
-        return true;
+        return super.dispatchTouchEvent(event);
+    }
+
+    public void handleScollTouchDown(){
+        bigWheel.setStartAngle(mStartAngle);
+        littleWheel.setStartAngle(mStartAngle);
+        bigWheel.refeshView(MotionEvent.ACTION_DOWN);
+        bigWheel.refeshView(MotionEvent.ACTION_DOWN);
+    }
+
+    public void handleScollTouchMove(){
+        bigWheel.setStartAngle(mStartAngle);
+        littleWheel.setStartAngle(mStartAngle);
+        //重新 绘制 界面
+        bigWheel.refeshView(MotionEvent.ACTION_MOVE);
+        littleWheel.refeshView(MotionEvent.ACTION_MOVE);
     }
 
     private void drawBodypart(Canvas canvas) {
