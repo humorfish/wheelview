@@ -152,7 +152,7 @@ public class WheelView extends ViewGroup {
                 }
             } else if (child.getId() == R.id.id_click_view) {
                 ImageButton view = (ImageButton)child;
-                view.layout(0, getHeight() - getWidth() * 2 / 5 , getWidth(), getHeight() + getWidth() * 3/ 5);
+                view.layout(0, getHeight() - getWidth() * 1 / 5 , getWidth(), getHeight() + getWidth() * 4/ 5);
                 view.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {

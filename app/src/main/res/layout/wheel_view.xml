@@ -4,18 +4,18 @@
     android:layout_height="match_parent"
     android:background="@color/app_background_working_color">
 
-    <com.you.turntable.model.WheelView
+    <com.you.wheelviewlib.WheelView
         android:id="@+id/wheelview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.you.turntable.model.BodyPartView
+        <com.you.wheelviewlib.BodyPartView
             android:id="@+id/id_circle_menu_big_wheel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#55ffaa00"/>
 
-        <com.you.turntable.model.BodyPartView
+        <com.you.wheelviewlib.BodyPartView
             android:id="@+id/id_circle_menu_little_wheel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,5 +27,5 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="@drawable/wheel3" />
-    </com.you.turntable.model.WheelView>
+    </com.you.wheelviewlib.WheelView>
 </RelativeLayout>

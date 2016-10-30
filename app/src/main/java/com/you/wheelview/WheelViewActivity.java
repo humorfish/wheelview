@@ -7,8 +7,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
+import com.you.wheelviewlib.WheelView;
 
-import com.you.turntable.model.WheelView;
 
 /**
  * Created by you on 2016/7/12.
