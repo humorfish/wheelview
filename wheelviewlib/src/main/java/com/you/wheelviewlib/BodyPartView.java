@@ -22,7 +22,7 @@ public class BodyPartView extends View {
     private final int MAJOR_MOVE = 2;
     public static final byte BIGWHEELVIEW = 0x01;
     public static final byte LITTLEWHEELVIEW = 0x02;
-    private byte WHEELTYPE;
+    private byte WHEELTYPE = 0X00;
     private int screenWidth = 480;
     private int screenHeigth = 800;
 
@@ -32,11 +32,6 @@ public class BodyPartView extends View {
     Bitmap rightBitmap;
     int centerBitmapId = -1;
 
-    /**
-     * 记录上一次的x，y坐标
-     */
-    private float mLastX;
-    private float mLastY;
     /**
      * 布局时的开始角度
      */
@@ -52,6 +47,9 @@ public class BodyPartView extends View {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
+                case MotionEvent.ACTION_DOWN:
+                    handleActionDown();
+                    break;
                 case MotionEvent.ACTION_UP:
                     handleActionUp();
                     break;
@@ -119,19 +117,18 @@ public class BodyPartView extends View {
     }
 
     public void setWheelType(byte wheelType, int centerBitmapId){
+        if (WHEELTYPE != 0x00)
+            return;
+
         WHEELTYPE = wheelType;
-        this.centerBitmapId = centerBitmapId;
-        setBitmap(centerBitmapId, true);
+        initBitmap(centerBitmapId);
     }
 
     public void setStartAngle(double mStartAngle){
         this.mStartAngle = mStartAngle;
     }
 
-    private void setBitmap(int centerBitmapId, boolean firstSetting) {
-        if (!firstSetting && centerBitmapId == this.centerBitmapId && (int)mStartAngle == 0)
-            return;
-
+    private void initBitmap(int centerBitmapId) {
         this.centerBitmapId = centerBitmapId;
 
         int centerResourceId = 0;
@@ -142,16 +139,20 @@ public class BodyPartView extends View {
                 centerResourceId = activitys[this.centerBitmapId];
                 rightResourceId = activitys[this.centerBitmapId+1];
                 leftResourceId = activitys[activitys.length -1];
-            } else if(centerBitmapId >= activitys.length -1){
-                this.centerBitmapId = 0;
+            } else if(centerBitmapId == activitys.length -1){
                 centerResourceId = activitys[0];
                 rightResourceId = activitys[1];
-                leftResourceId = activitys[2];
+                leftResourceId = activitys[activitys.length -1];
             } else if(centerBitmapId < 0){
                 this.centerBitmapId = activitys.length -1;
                 centerResourceId = activitys[this.centerBitmapId];
                 rightResourceId = activitys[0];
                 leftResourceId = activitys[this.centerBitmapId -1];
+            } else if (this.centerBitmapId >= activitys.length){
+                this.centerBitmapId = 0;
+                centerResourceId = activitys[this.centerBitmapId];
+                rightResourceId = activitys[this.centerBitmapId + 1];
+                leftResourceId = activitys[activitys.length -1];
             } else {
                 centerResourceId = activitys[this.centerBitmapId];
                 rightResourceId = activitys[this.centerBitmapId + 1];
@@ -163,17 +164,21 @@ public class BodyPartView extends View {
                 centerResourceId = bodyparts[this.centerBitmapId];
                 rightResourceId = bodyparts[this.centerBitmapId+1];
                 leftResourceId = bodyparts[bodyparts.length -1];
-            } else if(centerBitmapId >= bodyparts.length -1){
+            } else if(centerBitmapId >= bodyparts.length){
                 this.centerBitmapId = 0;
-                centerResourceId = bodyparts[0];
-                rightResourceId = bodyparts[1];
-                leftResourceId = bodyparts[2];
+                centerResourceId = bodyparts[this.centerBitmapId];
+                rightResourceId = bodyparts[this.centerBitmapId +1];
+                leftResourceId = bodyparts[bodyparts.length -1];
             } else if(centerBitmapId < 0){
                 this.centerBitmapId = bodyparts.length -1;
                 centerResourceId = bodyparts[this.centerBitmapId];
                 rightResourceId = bodyparts[0];
                 leftResourceId = bodyparts[this.centerBitmapId -1];
-            } else {
+            } else if(this.centerBitmapId == bodyparts.length -1){
+                centerResourceId = bodyparts[bodyparts.length -1];
+                rightResourceId = bodyparts[0];
+                leftResourceId = bodyparts[bodyparts.length -2];
+            } else{
                 centerResourceId = bodyparts[this.centerBitmapId];
                 rightResourceId = bodyparts[this.centerBitmapId+1];
                 leftResourceId = bodyparts[this.centerBitmapId -1];
@@ -191,6 +196,8 @@ public class BodyPartView extends View {
         bitmapTmp = BitmapFactory.decodeResource(getResources(), centerResourceId);
         centerBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3, screenWidth/3, true);
         bitmapTmp.recycle(); // 释放Bitmap的native像素数组
+
+        Log.i(TAG, "setBitmap.centerBitmapId:" + centerBitmapId);
     }
 
     private void drawBackground(Canvas canvas) {
@@ -271,67 +278,37 @@ public class BodyPartView extends View {
         canvas.drawLine(centerX, getHeight(), dxdy[0], dxdy[1], mPaint);
     }
 
-    private void handleActionUp() {
-        Log.i(TAG, " angle = " + mStartAngle);
-
-        int currentAngle = (int)mStartAngle%360;
-
-        if (currentAngle%90 > 0 && currentAngle%90 < 45){
-            handlNewPosition(currentAngle, 0, false);
-        } else if (currentAngle%90 >= 45 && currentAngle%90 < 90){
-            handlNewPosition(currentAngle, 90, true);
-        } else if(currentAngle%90 <= 0 && currentAngle%90 > -45){
-            handlNewPosition(currentAngle, 0, false);
-        } else if(currentAngle%90 <= -45 && currentAngle%90 >- 90){
-            handlNewPosition(currentAngle, -90, true);
-        }
+    private void handleActionDown() {
+        Log.i(TAG, "handleActionDown.angle = " + mStartAngle + "  centerBitmapId:" + this.centerBitmapId);
+        initBitmap(this.centerBitmapId);
+        invalidate();
     }
 
 
     private void handleActionMove() {
+        Log.i(TAG, "handleActionMove.angle:" + mStartAngle + "  centerBitmapId:" + centerBitmapId);
         invalidate();
     }
 
+    private void handleActionUp() {
+        int currentAngle = (int)mStartAngle%360;
 
-    private void handlNewPosition(final int startAngle, final int mFinalAngle, boolean changeBitmap) {
-        if (changeBitmap){
-            if (mFinalAngle == 0)
-                setBitmap(centerBitmapId, false);
-            else if(mFinalAngle == -90)
-                setBitmap(centerBitmapId - 1, false);
-            else if(mFinalAngle == 90)
-                setBitmap(centerBitmapId + 1, false);
+        if (currentAngle%90 > 0 && currentAngle%90 < 45){
+            mStartAngle = 0;
+        } else if (currentAngle%90 >= 45 && currentAngle%90 < 90){
+            mStartAngle = 90;
+            this.centerBitmapId -=1;
+        } else if(currentAngle%90 < 0 && currentAngle%90 > -45){
+            mStartAngle = 0;
+        } else if(currentAngle%90 <= -45 && currentAngle%90 >- 90){
+            mStartAngle = -90;
+            this.centerBitmapId +=1;
         }
 
-        mStartAngle = mFinalAngle;
+        Log.i(TAG, "handleActionUp.angle = " + mStartAngle + "  centerBitmapId:" + centerBitmapId);
         invalidate();
-        /*count = mFinalAngle - startAngle;
-        Log.i(TAG, " count=" + count + " stopFlag=" + stopFlag);
-        restPostion();
-        post(new Runnable() {
-            @Override
-            public void run() {
-                if (!stopFlag || count == 0)
-                    return;
-
-                if (count > 0){
-                    count--;
-                    mStartAngle --;
-                } else{
-                    count++;
-                    mStartAngle ++;
-                }
-                Log.i(TAG, "----UP---> count =" + count + " mStartAngle=" + mStartAngle);
-                invalidate();
-                SystemClock.sleep(16);
-                post(this);
-            }
-        });*/
     }
 
-
-    int count;
-    private boolean stopFlag = false;
 
     /**
      * 根据触摸的位置，计算角度

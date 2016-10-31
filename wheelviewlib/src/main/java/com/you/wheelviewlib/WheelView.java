@@ -163,19 +163,29 @@ public class WheelView extends ViewGroup {
         }
     }
 
+
+    private byte touchArea = 0x00;
+    private final byte SMALLWHEEL = 0x01;
+    private final byte BIGWHEEL = 0X02;
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         float x = event.getRawX();
         float y = event.getRawY();
 
-//        Log.e(TAG,"wheelType="+ WHEELTYPE +  "  x = " + x + "  , y = " + y);
+        Log.e(TAG, "  x = " + x + "  , y = " + y);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                if (getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) - getWidth()/2 <= y && y <=  getHeight() - (int) Math.sqrt(2) * getWidth() / 2)
+                    touchArea = BIGWHEEL;
+                else if(getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) <= y && y <= getHeight())
+                    touchArea = SMALLWHEEL;
+
+
                 mLastX = x;
                 mLastY = y;
                 mStartAngle = 0;
-
                 handleScollTouchDown();
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -204,24 +214,43 @@ public class WheelView extends ViewGroup {
 
                 break;
             case MotionEvent.ACTION_UP:
+                handleScollTouchUp();
+                mLastX =0;
+                mLastY =0;
+                mStartAngle =0;
                 break;
         }
         return super.dispatchTouchEvent(event);
     }
 
-    public void handleScollTouchDown(){
-        bigWheel.setStartAngle(mStartAngle);
-        littleWheel.setStartAngle(mStartAngle);
-        bigWheel.refeshView(MotionEvent.ACTION_DOWN);
-        bigWheel.refeshView(MotionEvent.ACTION_DOWN);
+    private void handleScollTouchDown(){
+        if (touchArea == BIGWHEEL){
+            bigWheel.setStartAngle(mStartAngle);
+            bigWheel.refeshView(MotionEvent.ACTION_DOWN);
+        }else if (touchArea == SMALLWHEEL){
+            littleWheel.setStartAngle(mStartAngle *2);
+            littleWheel.refeshView(MotionEvent.ACTION_DOWN);
+        }
     }
 
-    public void handleScollTouchMove(){
-        bigWheel.setStartAngle(mStartAngle);
-        littleWheel.setStartAngle(mStartAngle);
-        //重新 绘制 界面
-        bigWheel.refeshView(MotionEvent.ACTION_MOVE);
-        littleWheel.refeshView(MotionEvent.ACTION_MOVE);
+    private void handleScollTouchMove(){
+        if (touchArea == BIGWHEEL){
+            bigWheel.setStartAngle(mStartAngle);
+            bigWheel.refeshView(MotionEvent.ACTION_MOVE);
+        }else if (touchArea == SMALLWHEEL){
+            littleWheel.setStartAngle(mStartAngle *2);
+            littleWheel.refeshView(MotionEvent.ACTION_MOVE);
+        }
+    }
+
+    private void handleScollTouchUp(){
+        if (touchArea == BIGWHEEL){
+            bigWheel.setStartAngle(mStartAngle);
+            bigWheel.refeshView(MotionEvent.ACTION_UP);
+        }else if (touchArea == SMALLWHEEL){
+            littleWheel.setStartAngle(mStartAngle *2);
+            littleWheel.refeshView(MotionEvent.ACTION_UP);
+        }
     }
 
     private void drawBodypart(Canvas canvas) {
@@ -263,20 +292,6 @@ public class WheelView extends ViewGroup {
 
         canvas.drawBitmap(bitmap, matrix, null);
     }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        //canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG));
-        //setVisibility(INVISIBLE);
-        //this.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        //canvas.concat(matrix);
-        //this.setLayerType(View.LAYER_TYPE_NONE, null);
-        //setVisibility(VISIBLE);
-        //drawCircle(canvas);
-        //drawLittleView(canvas);
-    }
-
 
     // kkh
     public Bitmap loadBitmapFromView(View v, int size) {
