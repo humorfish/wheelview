@@ -14,8 +14,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Scroller;
+import android.widget.Toast;
 
 public class WheelView extends ViewGroup {
     private final String TAG = "WheelView";
@@ -151,12 +152,17 @@ public class WheelView extends ViewGroup {
                     bigWheel.layout(0, getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) - getWidth()/2, right, getHeight() - (int) Math.sqrt(2) * getWidth() / 2);
                 }
             } else if (child.getId() == R.id.id_click_view) {
-                ImageButton view = (ImageButton)child;
-                view.layout(0, getHeight() - getWidth() * 1 / 5 , getWidth(), getHeight() + getWidth() * 4/ 5);
-                view.setOnClickListener(new OnClickListener() {
+                ImageView view = (ImageView)child;
+                view.layout(0, getHeight() - getWidth() * 3 / 10, getWidth(), getHeight() + getWidth() * 7/ 10);
+                view.setOnTouchListener(new OnTouchListener() {
                     @Override
-                    public void onClick(View v) {
-                        Log.i(TAG, "onClick");
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                            Toast.makeText(getContext(), "" + motionEvent.getRawY(), Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+
+                        return true;
                     }
                 });
             }
@@ -165,6 +171,7 @@ public class WheelView extends ViewGroup {
 
 
     private byte touchArea = 0x00;
+    private final byte OUT_AREA = 0x00;
     private final byte SMALLWHEEL = 0x01;
     private final byte BIGWHEEL = 0X02;
 
@@ -179,8 +186,11 @@ public class WheelView extends ViewGroup {
             case MotionEvent.ACTION_DOWN:
                 if (getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) - getWidth()/2 <= y && y <=  getHeight() - (int) Math.sqrt(2) * getWidth() / 2)
                     touchArea = BIGWHEEL;
-                else if(getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) <= y && y <= getHeight())
+                else if(getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) <= y && y <= getHeight() - getWidth() * 3 / 10)
                     touchArea = SMALLWHEEL;
+                else
+                    touchArea = OUT_AREA;
+
 
 
                 mLastX = x;
@@ -346,4 +356,5 @@ public class WheelView extends ViewGroup {
         this.screenWidth = screenWidth;
         this.screenHeigth = screenHeigth;
     }
+
 }

@@ -134,30 +134,44 @@ public class BodyPartView extends View {
         int centerResourceId = 0;
         int leftResourceId =0;
         int rightResourceId =0;
+        Bitmap bitmapTmp = null;
         if (WHEELTYPE == LITTLEWHEELVIEW){
             if (centerBitmapId == 0){
                 centerResourceId = activitys[this.centerBitmapId];
                 rightResourceId = activitys[this.centerBitmapId+1];
                 leftResourceId = activitys[activitys.length -1];
-            } else if(centerBitmapId == activitys.length -1){
-                centerResourceId = activitys[0];
-                rightResourceId = activitys[1];
+            } else if(centerBitmapId >= activitys.length){
+                this.centerBitmapId = 0;
+                centerResourceId = activitys[this.centerBitmapId];
+                rightResourceId = activitys[this.centerBitmapId +1];
                 leftResourceId = activitys[activitys.length -1];
             } else if(centerBitmapId < 0){
                 this.centerBitmapId = activitys.length -1;
                 centerResourceId = activitys[this.centerBitmapId];
                 rightResourceId = activitys[0];
                 leftResourceId = activitys[this.centerBitmapId -1];
-            } else if (this.centerBitmapId >= activitys.length){
-                this.centerBitmapId = 0;
+            } else if(this.centerBitmapId == activitys.length -1){
+                centerResourceId = activitys[activitys.length -1];
+                rightResourceId = activitys[0];
+                leftResourceId = activitys[activitys.length -2];
+            } else{
                 centerResourceId = activitys[this.centerBitmapId];
-                rightResourceId = activitys[this.centerBitmapId + 1];
-                leftResourceId = activitys[activitys.length -1];
-            } else {
-                centerResourceId = activitys[this.centerBitmapId];
-                rightResourceId = activitys[this.centerBitmapId + 1];
+                rightResourceId = activitys[this.centerBitmapId+1];
                 leftResourceId = activitys[this.centerBitmapId -1];
             }
+
+
+            bitmapTmp = BitmapFactory.decodeResource(getResources(), rightResourceId);
+            rightBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3, screenWidth/3, true);
+            bitmapTmp.recycle(); // 释放Bitmap的native像素数组
+
+            bitmapTmp = BitmapFactory.decodeResource(getResources(), leftResourceId);
+            leftBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3, screenWidth/3, true);
+            bitmapTmp.recycle(); // 释放Bitmap的native像素数组
+
+            bitmapTmp = BitmapFactory.decodeResource(getResources(), centerResourceId);
+            centerBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3, screenWidth/3, true);
+            bitmapTmp.recycle(); // 释放Bitmap的native像素数组
 
         } else if (WHEELTYPE == BIGWHEELVIEW){
             if (centerBitmapId == 0){
@@ -183,19 +197,20 @@ public class BodyPartView extends View {
                 rightResourceId = bodyparts[this.centerBitmapId+1];
                 leftResourceId = bodyparts[this.centerBitmapId -1];
             }
+
+
+            bitmapTmp = BitmapFactory.decodeResource(getResources(), rightResourceId);
+            rightBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3 - px2dip(getContext(), 110), screenWidth/3 - px2dip(getContext(), 110), true);
+            bitmapTmp.recycle(); // 释放Bitmap的native像素数组
+
+            bitmapTmp = BitmapFactory.decodeResource(getResources(), leftResourceId);
+            leftBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3 - px2dip(getContext(), 110), screenWidth/3 - px2dip(getContext(), 110), true);
+            bitmapTmp.recycle(); // 释放Bitmap的native像素数组
+
+            bitmapTmp = BitmapFactory.decodeResource(getResources(), centerResourceId);
+            centerBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3 - px2dip(getContext(), 110), screenWidth/3 - px2dip(getContext(), 110), true);
+            bitmapTmp.recycle(); // 释放Bitmap的native像素数组
         }
-
-        Bitmap bitmapTmp = BitmapFactory.decodeResource(getResources(), rightResourceId);
-        rightBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3, screenWidth/3, true);
-        bitmapTmp.recycle(); // 释放Bitmap的native像素数组
-
-        bitmapTmp = BitmapFactory.decodeResource(getResources(), leftResourceId);
-        leftBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3, screenWidth/3, true);
-        bitmapTmp.recycle(); // 释放Bitmap的native像素数组
-
-        bitmapTmp = BitmapFactory.decodeResource(getResources(), centerResourceId);
-        centerBitmap = Bitmap.createScaledBitmap(bitmapTmp, screenWidth/3, screenWidth/3, true);
-        bitmapTmp.recycle(); // 释放Bitmap的native像素数组
 
         Log.i(TAG, "setBitmap.centerBitmapId:" + centerBitmapId);
     }
@@ -305,8 +320,9 @@ public class BodyPartView extends View {
             this.centerBitmapId +=1;
         }
 
-        Log.i(TAG, "handleActionUp.angle = " + mStartAngle + "  centerBitmapId:" + centerBitmapId);
+        //initBitmap(this.centerBitmapId);
         invalidate();
+        Log.i(TAG, "handleActionUp.angle = " + mStartAngle + "  centerBitmapId:" + centerBitmapId);
     }
 
 
@@ -356,6 +372,23 @@ public class BodyPartView extends View {
             mRadius = (float) Math.sqrt(2) * getWidth() / 2;
             Log.i(TAG, "------->onLayout.getHeight" + getHeight() + "  getWidth" + getWidth() + "  mRadius" + mRadius);
         }
+    }
+
+
+    /**
+     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+     */
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    /**
+     * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
+     */
+    public static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
     }
 
     /*@Override

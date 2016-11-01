@@ -21,11 +21,11 @@
             android:layout_height="wrap_content"
             android:background="#55ff22ff"/>
 
-        <ImageButton
+        <ImageView
             android:id="@+id/id_click_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/wheel3" />
+            android:src="@drawable/wheel3" />
     </com.you.wheelviewlib.WheelView>
 </RelativeLayout>
