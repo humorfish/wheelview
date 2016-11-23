@@ -171,27 +171,25 @@ public class WheelView extends ViewGroup {
 
 
     private byte touchArea = 0x00;
-    private final byte OUT_AREA = 0x00;
-    private final byte SMALLWHEEL = 0x01;
-    private final byte BIGWHEEL = 0X02;
+    private final byte OUT_AREA = 0x01;
+    private final byte SMALLWHEEL = 0x02;
+    private final byte BIGWHEEL = 0X03;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        float x = event.getRawX();
-        float y = event.getRawY();
+        float x = event.getX();
+        float y = event.getY();
 
         Log.e(TAG, "  x = " + x + "  , y = " + y);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) - getWidth()/2 <= y && y <=  getHeight() - (int) Math.sqrt(2) * getWidth() / 2)
+                if (getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) - getWidth()/2 < y && y <  getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)))
                     touchArea = BIGWHEEL;
-                else if(getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) <= y && y <= getHeight() - getWidth() * 3 / 10)
+                else if(getHeight() - (int)(Math.sqrt(2) * (getWidth()/2)) < y && y < getHeight() - getWidth() * 3 / 10)
                     touchArea = SMALLWHEEL;
                 else
                     touchArea = OUT_AREA;
-
-
 
                 mLastX = x;
                 mLastY = y;
